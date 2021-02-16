@@ -348,6 +348,21 @@ FUN(PDFDocument_getTrailer)(JNIEnv *env, jobject self)
 	return to_PDFObject_safe(ctx, env, obj);
 }
 
+JNIEXPORT void JNICALL
+FUN(PDFDocument_rewriteOutline)(JNIEnv *env, jobject self, jobject j_outline)
+{
+	fz_context *ctx = get_context(env);
+	pdf_document *pdf = from_PDFDocument(env, self);
+	fz_outline *outline = from_pdf_Outline(ctx, pdf, env, j_outline, NULL);
+
+	fz_try(ctx)
+		pdf_rewrite_outline(ctx, pdf, outline);
+	fz_always(ctx)
+		fz_drop_outline(ctx, outline);
+	fz_catch(ctx)
+		jni_rethrow_void(env, ctx);
+}
+
 JNIEXPORT jobject JNICALL
 FUN(PDFDocument_addObject)(JNIEnv *env, jobject self, jobject jobj)
 {

@@ -296,6 +296,61 @@ static inline jobject to_Outline_safe(fz_context *ctx, JNIEnv *env, fz_document 
 	return jarr;
 }
 
+static char *fz_str_from_field(fz_context *ctx, JNIEnv *env, jobject self, jfieldID fid, const char *label)
+{
+	jstring jstr = (*env)->GetObjectField(env, self, fid);
+	if (!jstr)
+		return NULL;
+
+	const char *utf = (*env)->GetStringUTFChars(env, jstr, NULL);
+	char *fzs = fz_strdup(ctx, utf);
+	(*env)->ReleaseStringUTFChars(env, jstr, utf);
+
+	if (label)
+		fzs = Memento_label(fzs, label);
+
+	return fzs;
+}
+
+static inline fz_outline *from_pdf_Outline(fz_context *ctx, pdf_document *doc, JNIEnv *env, jobject j_outlines, fz_outline *parent)
+{
+	fz_outline *first, *last;
+	jsize n;
+
+	if (!j_outlines)
+		return NULL;
+
+	first=NULL;
+	last=NULL;
+	n=(*env)->GetArrayLength(env, j_outlines);
+
+	for (int i=0; i<n; ++i) {
+		jobject j_outline = (*env)->GetObjectArrayElement(env, j_outlines, i);
+		fz_outline *outline = fz_new_outline(ctx);
+		outline->parent = parent;
+		outline->title = fz_str_from_field(ctx, env, j_outline, fid_Outline_title, "outline_title");
+		outline->uri   = fz_str_from_field(ctx, env, j_outline, fid_Outline_uri,   "outline_uri");
+
+		// copied from source/pdf/pdf-outline.c: pdf_load_outline_imp()
+		if (outline->uri && !fz_is_external_link(ctx, outline->uri))
+			outline->page = pdf_resolve_link(ctx, doc, outline->uri, &outline->x, &outline->y);
+		else
+			outline->page = -1;
+
+		outline->down = from_pdf_Outline(ctx, doc, env, (*env)->GetObjectField(env, j_outline, fid_Outline_down), outline);
+
+		if (!first)
+			first = outline;
+		if (last) {
+			last->next = outline;
+			outline->prev = last;
+		}
+		last = outline;
+	}
+
+	return first;
+}
+
 static inline jobject to_PDFAnnotation_safe(fz_context *ctx, JNIEnv *env, pdf_annot *annot)
 {
 	jobject jannot;

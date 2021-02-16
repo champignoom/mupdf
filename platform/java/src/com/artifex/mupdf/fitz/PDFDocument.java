@@ -24,6 +24,7 @@ public class PDFDocument extends Document
 	public native PDFObject findPage(int at);
 
 	public native PDFObject getTrailer();
+	public native void rewriteOutline(Outline[] outline);
 	public native int countObjects();
 
 	public native PDFObject newNull();
