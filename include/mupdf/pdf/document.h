@@ -116,6 +116,7 @@ int pdf_has_permission(fz_context *ctx, pdf_document *doc, fz_permission p);
 int pdf_lookup_metadata(fz_context *ctx, pdf_document *doc, const char *key, char *ptr, int size);
 
 fz_outline *pdf_load_outline(fz_context *ctx, pdf_document *doc);
+void pdf_rewrite_outline(fz_context *ctx, pdf_document *doc, fz_outline *outline);
 
 /*
 	Get the number of layer configurations defined in this document.

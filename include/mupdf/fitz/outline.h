@@ -22,6 +22,12 @@
 	page: The page number of an internal link, or -1 for external
 	links or links with no destination.
 
+	parent: The parent outline item, useful for verifying tree
+	structure. TODO: currently only valid for pdf document.
+
+	prev: The previous outline item, useful for verifying tree
+	structure. TODO: currently only valid for pdf document.
+
 	next: The next outline item at the same level as this outline
 	item. May be NULL if no more outline items exist at this level.
 
@@ -35,6 +41,8 @@ typedef struct fz_outline
 	char *uri;
 	int page;
 	float x, y;
+	struct fz_outline *parent;
+	struct fz_outline *prev;
 	struct fz_outline *next;
 	struct fz_outline *down;
 	int is_open;
