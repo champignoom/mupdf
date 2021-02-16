@@ -189,7 +189,7 @@ pdf_write_outline_imp(fz_context *ctx, pdf_document *doc, fz_outline *first, pdf
 		//pdf_array_push_int(ctx._ctx, arr, 57);
 		page = pdf_lookup_page_obj(ctx, doc, outline->page);
 		if (!page)
-			fz_throw(ctx, FZ_ERROR_GENERIC, fz_asprintf(ctx, "page %d does not exist", outline->page));
+			fz_throw(ctx, FZ_ERROR_GENERIC, "page %d does not exist", outline->page);
 		assert(pdf_is_indirect(ctx, page));
 		pdf_array_push(ctx, arr, page);
 		pdf_array_push(ctx, arr, PDF_NAME(XYZ));
@@ -299,7 +299,7 @@ pdf_rewrite_outline(fz_context *ctx, pdf_document *doc, fz_outline *outline)
 	const char *msg = check_outline(outline);
 	if (msg)
 	{
-		fz_throw(ctx, FZ_ERROR_GENERIC, fz_asprintf(ctx, "invalid outline: %s", msg));
+		fz_throw(ctx, FZ_ERROR_GENERIC, "invalid outline: %s", msg);
 	}
 	pdf_clear_outline(ctx, doc);
 	pdf_write_outline(ctx, doc, outline);
