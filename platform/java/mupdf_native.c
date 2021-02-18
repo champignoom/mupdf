@@ -153,6 +153,7 @@ static jfieldID fid_NativeDevice_nativeResource;
 static jfieldID fid_Outline_title;
 static jfieldID fid_Outline_uri;
 static jfieldID fid_Outline_down;
+static jfieldID fid_Outline_isOpen;
 static jfieldID fid_PDFAnnotation_pointer;
 static jfieldID fid_PDFDocument_pointer;
 static jfieldID fid_PDFGraftMap_pointer;
@@ -735,7 +736,8 @@ static int find_fids(JNIEnv *env)
 	fid_Outline_title = get_field(&err, env, "title", "Ljava/lang/String;");
 	fid_Outline_uri = get_field(&err, env, "uri", "Ljava/lang/String;");
 	fid_Outline_down = get_field(&err, env, "down", "[L"PKG"Outline;");
-	mid_Outline_init = get_method(&err, env, "<init>", "(Ljava/lang/String;Ljava/lang/String;[L"PKG"Outline;)V");
+	fid_Outline_isOpen = get_field(&err, env, "isOpen", "Z");
+	mid_Outline_init = get_method(&err, env, "<init>", "(Ljava/lang/String;Ljava/lang/String;[L"PKG"Outline;Z)V");
 
 	cls_Page = get_class(&err, env, PKG"Page");
 	fid_Page_pointer = get_field(&err, env, "pointer", "J");

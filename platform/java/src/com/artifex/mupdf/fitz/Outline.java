@@ -5,11 +5,13 @@ public class Outline
 	public String title;
 	public String uri;
 	public Outline[] down;
+	public boolean isOpen;
 
-	public Outline(String title, String uri, Outline[] down) {
+	public Outline(String title, String uri, Outline[] down, boolean isOpen) {
 		this.title = title;
 		this.uri = uri;
 		this.down = down;
+		this.isOpen = isOpen;
 	}
 
 	public String toString()

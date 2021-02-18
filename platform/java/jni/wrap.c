@@ -276,7 +276,7 @@ static inline jobject to_Outline_safe(fz_context *ctx, JNIEnv *env, fz_document 
 			if (!jdown) return NULL;
 		}
 
-		joutline = (*env)->NewObject(env, cls_Outline, mid_Outline_init, jtitle, juri, jdown);
+		joutline = (*env)->NewObject(env, cls_Outline, mid_Outline_init, jtitle, juri, jdown, (jboolean)outline->is_open);
 		if (!joutline) return NULL;
 
 		if (jdown)
@@ -328,8 +328,9 @@ static inline fz_outline *from_pdf_Outline(fz_context *ctx, pdf_document *doc, J
 		jobject j_outline = (*env)->GetObjectArrayElement(env, j_outlines, i);
 		fz_outline *outline = fz_new_outline(ctx);
 		outline->parent = parent;
-		outline->title = fz_str_from_field(ctx, env, j_outline, fid_Outline_title, "outline_title");
-		outline->uri   = fz_str_from_field(ctx, env, j_outline, fid_Outline_uri,   "outline_uri");
+		outline->title   = fz_str_from_field(ctx, env, j_outline, fid_Outline_title,     "outline_title");
+		outline->uri     = fz_str_from_field(ctx, env, j_outline, fid_Outline_uri,       "outline_uri");
+		outline->is_open = (*env)->GetBooleanField(env, j_outline, fid_Outline_isOpen);
 
 		// copied from source/pdf/pdf-outline.c: pdf_load_outline_imp()
 		if (outline->uri && !fz_is_external_link(ctx, outline->uri))
