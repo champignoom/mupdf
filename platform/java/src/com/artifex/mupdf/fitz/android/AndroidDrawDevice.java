@@ -15,19 +15,31 @@ public final class AndroidDrawDevice extends NativeDevice
 		Context.init();
 	}
 
-	private native long newNative(Bitmap bitmap, int xOrigin, int yOrigin, int patchX0, int patchY0, int patchX1, int patchY1);
+	private native long newNative(Bitmap bitmap, boolean initFF, int xOrigin, int yOrigin, int patchX0, int patchY0, int patchX1, int patchY1);
 
 	public AndroidDrawDevice(Bitmap bitmap, int xOrigin, int yOrigin, int patchX0, int patchY0, int patchX1, int patchY1) {
+		this(bitmap, true, xOrigin, yOrigin, patchX0, patchY0, patchX1, patchY1);
+	}
+
+	public AndroidDrawDevice(Bitmap bitmap, boolean initFF, int xOrigin, int yOrigin, int patchX0, int patchY0, int patchX1, int patchY1) {
 		super(0);
-		pointer = newNative(bitmap, xOrigin, yOrigin, patchX0, patchY0, patchX1, patchY1);
+		pointer = newNative(bitmap, initFF, xOrigin, yOrigin, patchX0, patchY0, patchX1, patchY1);
 	}
 
 	public AndroidDrawDevice(Bitmap bitmap, int xOrigin, int yOrigin) {
-		this(bitmap, xOrigin, yOrigin, 0, 0, bitmap.getWidth(), bitmap.getHeight());
+		this(bitmap, true, xOrigin, yOrigin);
+	}
+
+	public AndroidDrawDevice(Bitmap bitmap, boolean initFF, int xOrigin, int yOrigin) {
+		this(bitmap, initFF, xOrigin, yOrigin, 0, 0, bitmap.getWidth(), bitmap.getHeight());
 	}
 
 	public AndroidDrawDevice(Bitmap bitmap) {
-		this(bitmap, 0, 0);
+		this(bitmap, true);
+	}
+
+	public AndroidDrawDevice(Bitmap bitmap, boolean initFF) {
+		this(bitmap, initFF, 0, 0);
 	}
 
 	public static Bitmap drawPage(Page page, Matrix ctm) {

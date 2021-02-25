@@ -1,7 +1,7 @@
 /* AndroidDrawDevice interface */
 
 static jlong
-newNativeAndroidDrawDevice(JNIEnv *env, jobject self, fz_context *ctx, jobject obj, jint width, jint height, NativeDeviceLockFn *lock, NativeDeviceUnlockFn *unlock, jint xOrigin, jint yOrigin, jint patchX0, jint patchY0, jint patchX1, jint patchY1)
+newNativeAndroidDrawDevice(JNIEnv *env, jobject self, fz_context *ctx, jobject obj, jboolean initFF, jint width, jint height, NativeDeviceLockFn *lock, NativeDeviceUnlockFn *unlock, jint xOrigin, jint yOrigin, jint patchX0, jint patchY0, jint patchX1, jint patchY1)
 {
 	fz_device *device = NULL;
 	fz_pixmap *pixmap = NULL;
@@ -45,7 +45,8 @@ newNativeAndroidDrawDevice(JNIEnv *env, jobject self, fz_context *ctx, jobject o
 		info = lockNativeDevice(env,self,&err);
 		if (!err)
 		{
-			fz_clear_pixmap_with_value(ctx, pixmap, 0xff);
+			if (initFF)
+				fz_clear_pixmap_with_value(ctx, pixmap, 0xff);
 			unlockNativeDevice(env,ninfo);
 			device = fz_new_draw_device(ctx, fz_identity, pixmap);
 		}
@@ -136,7 +137,7 @@ FUN(android_AndroidDrawDevice_invertLuminance)(JNIEnv *env, jobject self)
 }
 
 JNIEXPORT jlong JNICALL
-FUN(android_AndroidDrawDevice_newNative)(JNIEnv *env, jclass self, jobject jbitmap, jint xOrigin, jint yOrigin, jint pX0, jint pY0, jint pX1, jint pY1)
+FUN(android_AndroidDrawDevice_newNative)(JNIEnv *env, jclass self, jobject jbitmap, jboolean initFF, jint xOrigin, jint yOrigin, jint pX0, jint pY0, jint pX1, jint pY1)
 {
 	fz_context *ctx = get_context(env);
 	AndroidBitmapInfo info;
@@ -154,7 +155,7 @@ FUN(android_AndroidDrawDevice_newNative)(JNIEnv *env, jclass self, jobject jbitm
 		jni_throw_run(env, "new DrawDevice failed as bitmap width != stride");
 
 	fz_try(ctx)
-		device = newNativeAndroidDrawDevice(env, self, ctx, jbitmap, info.width, info.height, androidDrawDevice_lock, androidDrawDevice_unlock, xOrigin, yOrigin, pX0, pY0, pX1, pY1);
+		device = newNativeAndroidDrawDevice(env, self, ctx, jbitmap, initFF, info.width, info.height, androidDrawDevice_lock, androidDrawDevice_unlock, xOrigin, yOrigin, pX0, pY0, pX1, pY1);
 	fz_catch(ctx)
 		jni_rethrow(env, ctx);
 
